@@ -101,7 +101,9 @@ body::before{
 .envelope__body{
   position:relative;
   width:100%; height:100%;
-  transform-style:preserve-3d;
+  /* deja ver la carta cuando sube por encima del sobre,
+     pero recorta cualquier sobrante por debajo del borde inferior */
+  clip-path:inset(-200% 0 0 0);
 }
 
 .envelope__back{
@@ -109,13 +111,18 @@ body::before{
   background:linear-gradient(155deg, #fffaf1, #f2e4cb);
   border-radius:4px;
   box-shadow:0 20px 50px -12px rgba(0,0,0,.55);
+  z-index:1;
 }
 
+/* franja inferior fija del sobre: siempre tapa la parte baja de la carta,
+   igual que el "bolsillo" de un sobre real */
 .envelope__front{
-  position:absolute; inset:0;
+  position:absolute;
+  left:0; right:0; bottom:0;
+  top:60%;
   background:linear-gradient(155deg, #fffdf9, #f7ecd8);
-  clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%);
   border-radius:0 0 4px 4px;
+  box-shadow:0 -1px 0 rgba(0,0,0,.05);
   z-index:3;
 }
 .envelope__front::before,
@@ -136,7 +143,7 @@ body::before{
 
 .envelope__flap{
   position:absolute; top:0; left:0; right:0;
-  height:62%;
+  height:60%;
   background:linear-gradient(155deg, #fdf5e6, #eddcbe);
   clip-path:polygon(0 0, 100% 0, 50% 100%);
   transform-origin:top center;
@@ -144,11 +151,13 @@ body::before{
   transition:transform 1s var(--ease-elegant);
   z-index:5;
   box-shadow:0 1px 0 rgba(0,0,0,.06);
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
 }
 
 .envelope__seal{
   position:absolute;
-  top:38%; left:50%;
+  top:37%; left:50%;
   width:52px; height:52px;
   transform:translate(-50%,-50%);
   border-radius:50%;
@@ -175,16 +184,16 @@ body::before{
 
 .letter{
   position:absolute;
-  left:6%; right:6%;
-  bottom:4%;
-  height:88%;
+  left:8%; right:8%;
+  top:60%;
+  min-height:44%;
   background:var(--color-white);
   border:1px solid var(--color-gold-light);
   border-radius:2px;
   box-shadow:0 -6px 20px rgba(0,0,0,.12);
   padding:26px 20px;
   text-align:center;
-  transform:translateY(6%);
+  transform:translateY(0%);
   transition:transform 1s .15s var(--ease-elegant);
   z-index:2;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
@@ -229,7 +238,7 @@ body::before{
 
 /* estados abiertos, controlados por JS */
 .envelope.is-open .envelope__flap{ transform:rotateX(-180deg); }
-.envelope.is-open .letter{ transform:translateY(-46%); }
+.envelope.is-open .letter{ transform:translateY(-112%); }
 .envelope.is-open .letter__line--1{ transition-delay:.55s; opacity:1; transform:translateY(0); }
 .envelope.is-open .letter__line--2{ transition-delay:.85s; opacity:1; transform:translateY(0); }
 .envelope.is-open .btn--open{ transition-delay:1.15s; opacity:1; transform:translateY(0); pointer-events:auto; }
